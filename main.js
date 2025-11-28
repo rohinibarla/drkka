@@ -117,7 +117,7 @@ function handleSelection(e) {
 }
 
 // Handle form submission
-function handleSubmit(e) {
+async function handleSubmit(e) {
   e.preventDefault()
 
   // Prevent double submission
@@ -177,17 +177,35 @@ function handleSubmit(e) {
       }
     })
 
+    // Send to server
+    const response = await fetch('/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      throw new Error('Server returned error: ' + response.status)
+    }
+
+    const result = await response.json()
+
     // Mark as submitted
     isSubmitted = true
 
-    // Console output
-    console.log(JSON.stringify(payload, null, 2))
+    // Console output (for debugging)
+    // console.log(JSON.stringify(payload, null, 2))
 
-    // Display on page
-    displayJSON(payload)
+    // Display on page (commented out for production, uncomment for debugging)
+    // displayJSON(payload)
 
     // Update button
     submitBtn.textContent = 'Submitted ✓'
+
+    // Show success message
+    alert('Submission successful! Your answer has been recorded.')
 
   } catch (error) {
     console.error('Error processing submission:', error)
