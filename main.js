@@ -60,6 +60,11 @@ function handleKeydown(e) {
   const now = performance.now()
   const key = e.key
 
+  // Ignore keys pressed with modifiers (Ctrl+V, Cmd+C, etc.) - these are shortcuts
+  if (e.ctrlKey || e.metaKey || e.altKey) {
+    return
+  }
+
   if (key.length === 1) {
     // Regular character (a, b, 1, !, etc.)
     captureData.rawEvents.push({
