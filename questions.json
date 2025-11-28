@@ -1,0 +1,32 @@
+[
+  {
+    "question_title": "Flight Booking Confirmation",
+    "question": "Dear Rohini, Your flight ticket is booked. Passenger: Rohini Sharma, Flight: AI-205, From: Delhi to Mumbai, Departure: 15-Dec-2023 at 10:30 AM, Booking Ref: FL2312456789. Check-in 2 hours before.",
+    "variables": "PassengerName, FlightNumber, DepartureCity, ArrivalCity, DepartureDateTime, BookingReference"
+  },
+  {
+    "question_title": "Restaurant Reservation Confirmation",
+    "question": "Your table is reserved at The Golden Fork for 2 people on 20-Dec-2023 at 7:30 PM. Reservation name: Rajesh Kumar, Confirmation code: RST892345, Contact: 98765-43210. Please arrive 10 minutes early.",
+    "variables": "RestaurantName, PartySize, ReservationDate, ReservationTime, CustomerName, ConfirmationCode, ContactNumber"
+  },
+  {
+    "question_title": "E-commerce Package Delivery Notification",
+    "question": "Your order OD20231208001 containing 2 units of Samsung Mobile (Rs.45,999 each) has been dispatched. Tracking ID: TRK987654321, Expected delivery: 12-Dec-2023 by 6:00 PM, Delivery address: Flat 5, Maple Apartments, Hyderabad 500081.",
+    "variables": "OrderID, Quantity, ProductName, UnitPrice, TrackingID, DeliveryDate, DeliveryTime, DeliveryAddress"
+  },
+  {
+    "question_title": "Bank Account Transaction Alert",
+    "question": "Alert! Amount Rs.15,000 has been debited from your account ending in 4829 on 08-Dec-2023 at 3:45 PM for Mobile Recharge to number 9876543210. Available balance: Rs.52,340. Transaction ID: TXN202312080001.",
+    "variables": "TransactionAmount, AccountNumber, TransactionDate, TransactionTime, ServiceType, PhoneNumber, AvailableBalance, TransactionID"
+  },
+  {
+    "question_title": "Medical Appointment Confirmation",
+    "question": "Your appointment is confirmed at Apollo Hospital. Patient: Priya Singh, Doctor: Dr. Arun Kumar, Specialization: Cardiology, Date: 22-Dec-2023, Time: 2:00 PM, Room: 405, Floor: 4. Call 040-66666666 to reschedule.",
+    "variables": "HospitalName, PatientName, DoctorName, Specialization, AppointmentDate, AppointmentTime, RoomNumber, FloorNumber"
+  },
+  {
+    "question_title": "Insurance Claim Status Update",
+    "question": "Your insurance claim CLM2023001 for amount Rs.1,00,000 has been approved. Policy number: POL987654321, Claim type: Health, Processing date: 05-Dec-2023, Approved amount: Rs.95,000, Amount will be credited within 5-7 business days.",
+    "variables": "ClaimNumber, ClaimedAmount, PolicyNumber, ClaimType, ProcessingDate, ApprovedAmount, CreditDays"
+  }
+]

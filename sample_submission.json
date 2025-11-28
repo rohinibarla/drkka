@@ -1,0 +1,40 @@
+{
+  "examId": "EXAM-DEMO-001",
+  "studentId": "550e8400-e29b-41d4-a716-446655440000",
+  "submissionTime": "2025-11-28T10:30:00.000Z",
+  "metadata": {
+    "studentName": "Priya Sharma"
+  },
+  "q1": {
+    "questionIndex": 5,
+    "questionTitle": "Insurance Claim Status Update",
+    "question": "Your insurance claim CLM2023001 for amount Rs.1,00,000 has been approved. Policy number: POL987654321, Claim type: Health, Processing date: 05-Dec-2023, Approved amount: Rs.95,000, Amount will be credited within 5-7 business days.",
+    "finalAnswer": "print \"Your insurance claim \" + ClaimNumber + \" for amount Rs.\" + ClaimedAmount + \" has been approved. Policy number: \" + PolicyNumber + \", Claim type: \" + ClaimType + \", Processing date: \" + ProcessingDate + \", Approved amount: Rs.\" + ApprovedAmount + \", Amount will be credited within \" + CreditDays + \" business days.\"",
+    "startTime_ms": 1000000,
+    "endTime_ms": 1045500,
+    "eventLog": [
+      { "type": "RAW_KEY", "key": "p", "latency_ms": 0 },
+      { "type": "COMPRESSED", "string": "rint \"Your ", "latency_ms": 150, "interval_ms": 145 },
+      { "type": "COMPRESSED", "string": "insurance claim", "latency_ms": 148, "interval_ms": 142 },
+      { "type": "RAW_KEY", "key": " ", "latency_ms": 200 },
+      { "type": "RAW_KEY", "key": "\"", "latency_ms": 180 },
+      { "type": "COMPRESSED", "string": " + ClaimN", "latency_ms": 250, "interval_ms": 150 },
+      { "type": "RAW_SPECIAL", "key": "Backspace", "latency_ms": 400 },
+      { "type": "COMPRESSED", "string": "umber + \"", "latency_ms": 200, "interval_ms": 148 },
+      { "type": "RAW_PASTE", "content": " for amount Rs.\" + ClaimedAmount + \"", "latency_ms": 1500 },
+      { "type": "COMPRESSED", "string": " has been approved", "latency_ms": 300, "interval_ms": 140 },
+      { "type": "RAW_KEY", "key": ".", "latency_ms": 250 },
+      { "type": "COMPRESSED", "string": " Policy number: \" + PolicyNumber + \",", "latency_ms": 350, "interval_ms": 135 },
+      { "type": "RAW_KEY", "key": " ", "latency_ms": 180 },
+      { "type": "COMPRESSED", "string": "Claim type: \" + ClaimType + \",", "latency_ms": 200, "interval_ms": 138 },
+      { "type": "SELECTION_CHANGE", "start": 120, "end": 120, "latency_ms": 800 },
+      { "type": "COMPRESSED", "string": " Processing date: \" + ProcessingDate + \",", "latency_ms": 220, "interval_ms": 143 },
+      { "type": "RAW_KEY", "key": " ", "latency_ms": 160 },
+      { "type": "COMPRESSED", "string": "Approved amount: Rs.\" + ApprovedAmount + \",", "latency_ms": 190, "interval_ms": 146 },
+      { "type": "RAW_KEY", "key": " ", "latency_ms": 170 },
+      { "type": "COMPRESSED", "string": "Amount will be credited within \" + CreditDays + \"", "latency_ms": 200, "interval_ms": 141 },
+      { "type": "RAW_KEY", "key": " ", "latency_ms": 180 },
+      { "type": "COMPRESSED", "string": "business days.\"", "latency_ms": 155, "interval_ms": 144 }
+    ]
+  }
+}
