@@ -28,13 +28,19 @@ async function loadRandomQuestion() {
 
   } catch (error) {
     console.error('Error loading questions:', error)
-    // Fallback question
-    selectedQuestion = {
-      index: -1,
-      title: 'Fallback Question',
-      text: 'Write a function to reverse a string'
-    }
-    document.getElementById('question-text').textContent = selectedQuestion.text
+    // Show error message with retry option
+    const questionDiv = document.getElementById('question-text')
+    questionDiv.innerHTML = `
+      <div class="text-red-600 mb-4">
+        ⚠️ Failed to load question: ${error.message}
+      </div>
+      <button
+        onclick="loadRandomQuestion()"
+        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+      >
+        🔄 Retry Loading Question
+      </button>
+    `
   }
 }
 
