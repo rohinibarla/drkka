@@ -22,19 +22,16 @@ Enable exam proctors to:
 
 ## File Structure
 
-### Main Exam System (Frontend)
+### Frontend Files
 ```
-exam.html               (101 lines)  - Exam form UI with Tailwind CSS (renamed from index.html)
-main.js                 (266 lines)  - Event capture and submission
-process_and_pack.js     (208 lines)  - Compression and JSON generation
-questions.json          (User data)  - Question bank (6 questions)
-```
-
-### Review System
-```
-review.html             (161 lines)  - Replay UI interface
-review.js               (490 lines)  - Async replay engine
-sample_submission.json  (Test data)  - Sample for testing replay
+frontend/
+├── exam.html               (101 lines)  - Exam form UI with Tailwind CSS
+├── main.js                 (266 lines)  - Event capture and submission
+├── process_and_pack.js     (208 lines)  - Compression and JSON generation
+├── questions.json          (User data)  - Question bank (6 questions)
+├── review.html             (161 lines)  - Replay UI interface
+├── review.js               (490 lines)  - Async replay engine
+└── sample_submission.json  (Test data)  - Sample for testing replay
 ```
 
 ### Backend Server (Go + SQLite)
@@ -177,7 +174,7 @@ Storage Layer (SQLite):
 |----------|---------|-------------|
 | `PORT` | `8080` | Server port |
 | `DB_PATH` | `./drkka.db` | SQLite database file path |
-| `STATIC_DIR` | `../` | Directory containing HTML/JS/JSON files |
+| `STATIC_DIR` | `../frontend/` | Directory containing HTML/JS/JSON files |
 | `ALLOWED_ORIGINS` | localhost | Comma-separated CORS origins |
 
 **Production Config (codekaryashala.com):**
@@ -185,7 +182,7 @@ Storage Layer (SQLite):
 ```bash
 export PORT=8080
 export DB_PATH=/var/lib/drkka/submissions.db
-export STATIC_DIR=../
+export STATIC_DIR=../frontend/
 export ALLOWED_ORIGINS="http://codekaryashala.com,https://codekaryashala.com"
 ```
 
@@ -466,7 +463,7 @@ DEFAULT_EXAM_ID = "EXAM-DEMO-001"  // Change for different exams
    ```bash
    export PORT=8080
    export DB_PATH=/var/lib/drkka/submissions.db
-   export STATIC_DIR=../
+   export STATIC_DIR=../frontend/
    export ALLOWED_ORIGINS="http://codekaryashala.com,https://codekaryashala.com"
    ```
 
@@ -752,7 +749,7 @@ A: Check speed > 0 (division by zero protection added)
 **Backend Deployment:**
 1. Build server: `cd backend && go build -o drkka-server`
 2. Configure environment: `./config_server.sh` or set variables manually
-3. Ensure static files are in parent directory (exam.html, main.js, etc.)
+3. Ensure static files are in frontend/ directory (exam.html, main.js, etc.)
 4. Start server: `./drkka-server`
 5. Verify health: `curl http://localhost:8080/health`
 6. Test exam page: `http://localhost:8080/exam.html`
