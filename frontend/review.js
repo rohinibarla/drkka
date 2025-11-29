@@ -63,44 +63,54 @@ function loadSubmission() {
 }
 
 function displaySubmissionInfo(submission) {
+  // Helper to safely set text content
+  const setTextContent = (id, value) => {
+    const element = document.getElementById(id)
+    if (element) {
+      element.textContent = value
+    } else {
+      console.warn(`Element with id '${id}' not found`)
+    }
+  }
+
   // Display metadata
-  document.getElementById('student-name').textContent =
-    submission.metadata.studentName || 'N/A'
-
-  document.getElementById('exam-id').textContent =
-    submission.examId || 'N/A'
-
-  document.getElementById('submission-time').textContent =
-    new Date(submission.submissionTime).toLocaleString() || 'N/A'
-
-  document.getElementById('question-text').textContent =
-    submission.q1.question || 'N/A'
-
-  document.getElementById('final-answer').textContent =
-    submission.q1.finalAnswer || ''
+  setTextContent('student-name', submission.metadata?.studentName || 'N/A')
+  setTextContent('exam-id', submission.examId || 'N/A')
+  setTextContent('submission-time', new Date(submission.submissionTime).toLocaleString() || 'N/A')
+  setTextContent('question-text', submission.q1?.question || 'N/A')
+  setTextContent('final-answer', submission.q1?.finalAnswer || '')
 
   // Calculate duration
-  if (submission.q1.startTime_ms && submission.q1.endTime_ms) {
+  if (submission.q1?.startTime_ms && submission.q1?.endTime_ms) {
     const duration = submission.q1.endTime_ms - submission.q1.startTime_ms
     const seconds = Math.round(duration / 1000)
-    document.getElementById('duration').textContent = `${seconds} seconds`
+    setTextContent('duration', `${seconds} seconds`)
   } else {
-    document.getElementById('duration').textContent = 'N/A'
+    setTextContent('duration', 'N/A')
   }
 
   // Show info panel
-  document.getElementById('info-panel').classList.remove('hidden')
+  const infoPanel = document.getElementById('info-panel')
+  if (infoPanel) {
+    infoPanel.classList.remove('hidden')
+  }
 }
 
 function showError(message) {
   const errorDiv = document.getElementById('error-message')
-  errorDiv.textContent = message
-  errorDiv.classList.remove('hidden')
+  if (errorDiv) {
+    errorDiv.textContent = message
+    errorDiv.classList.remove('hidden')
+  } else {
+    console.error('Error display element not found. Error message:', message)
+  }
 }
 
 function hideError() {
   const errorDiv = document.getElementById('error-message')
-  errorDiv.classList.add('hidden')
+  if (errorDiv) {
+    errorDiv.classList.add('hidden')
+  }
 }
 
 // ============================================
@@ -457,20 +467,45 @@ function updateProgress() {
 
   // Update progress bar
   const progressBar = document.getElementById('progress-bar')
-  progressBar.style.width = percentage + '%'
+  if (progressBar) {
+    progressBar.style.width = percentage + '%'
+  }
 
-  // Update counter
+  // Update counter (review_dev.html uses 'event-counter')
   const counter = document.getElementById('event-counter')
-  counter.textContent = `Event ${current} of ${total}`
+  if (counter) {
+    counter.textContent = `Event ${current} of ${total}`
+  }
+
+  // Update progress text (review.html uses 'progress-text')
+  const progressText = document.getElementById('progress-text')
+  if (progressText) {
+    progressText.textContent = Math.round(percentage) + '%'
+  }
 }
 
 function updatePlayPauseButton() {
+  // Handle review_dev.html toggle button
   const btn = document.getElementById('play-pause-btn')
+  if (btn) {
+    if (reviewState.isPlaying && !reviewState.isPaused) {
+      btn.textContent = '⏸ Pause'
+    } else {
+      btn.textContent = '▶ Play'
+    }
+  }
 
-  if (reviewState.isPlaying && !reviewState.isPaused) {
-    btn.textContent = '⏸ Pause'
-  } else {
-    btn.textContent = '▶ Play'
+  // Handle review.html separate buttons
+  const playBtn = document.getElementById('play-btn')
+  const pauseBtn = document.getElementById('pause-btn')
+  if (playBtn && pauseBtn) {
+    if (reviewState.isPlaying && !reviewState.isPaused) {
+      playBtn.classList.add('hidden')
+      pauseBtn.classList.remove('hidden')
+    } else {
+      playBtn.classList.remove('hidden')
+      pauseBtn.classList.add('hidden')
+    }
   }
 }
 
@@ -521,36 +556,39 @@ window.loadSubmissionData = function(submission) {
  * Display submission info for new review.html structure
  */
 window.displaySubmissionInfoNew = function(submission) {
-  // Display metadata
-  document.getElementById('student-name').textContent =
-    submission.metadata.studentName || 'N/A'
+  // Helper to safely set text content
+  const setTextContent = (id, value) => {
+    const element = document.getElementById(id)
+    if (element) {
+      element.textContent = value
+    } else {
+      console.warn(`Element with id '${id}' not found`)
+    }
+  }
 
-  document.getElementById('exam-id').textContent =
-    submission.examId || 'N/A'
+  // Display metadata
+  setTextContent('student-name', submission.metadata?.studentName || 'N/A')
+  setTextContent('exam-id', submission.examId || 'N/A')
 
   // Question
-  document.getElementById('question-title').textContent =
-    submission.q1.questionTitle || 'Question'
-
-  document.getElementById('question-text').textContent =
-    submission.q1.question || 'N/A'
+  setTextContent('question-title', submission.q1?.questionTitle || 'Question')
+  setTextContent('question-text', submission.q1?.question || 'N/A')
 
   // Final answer
-  document.getElementById('final-answer-text').textContent =
-    submission.q1.finalAnswer || ''
+  setTextContent('final-answer-text', submission.q1?.finalAnswer || '')
 
   // Calculate duration
-  if (submission.q1.startTime_ms && submission.q1.endTime_ms) {
+  if (submission.q1?.startTime_ms && submission.q1?.endTime_ms) {
     const duration = submission.q1.endTime_ms - submission.q1.startTime_ms
     const seconds = Math.round(duration / 1000)
-    document.getElementById('duration').textContent = `${seconds} seconds`
+    setTextContent('duration', `${seconds} seconds`)
   } else {
-    document.getElementById('duration').textContent = 'N/A'
+    setTextContent('duration', 'N/A')
   }
 
   // Event count
-  document.getElementById('event-count').textContent =
-    submission.q1.eventLog ? submission.q1.eventLog.length : 0
+  const eventCount = submission.q1?.eventLog ? submission.q1.eventLog.length : 0
+  setTextContent('event-count', String(eventCount))
 }
 
 // ============================================
