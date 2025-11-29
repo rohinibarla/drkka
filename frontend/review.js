@@ -482,7 +482,7 @@ function updatePlayPauseButton() {
  * Load submission data programmatically
  * Called from review.html when submission is passed via sessionStorage
  */
-function loadSubmissionData(submission) {
+window.loadSubmissionData = function(submission) {
   try {
     // Validate required fields
     if (!submission.q1) {
@@ -520,7 +520,7 @@ function loadSubmissionData(submission) {
 /**
  * Display submission info for new review.html structure
  */
-function displaySubmissionInfoNew(submission) {
+window.displaySubmissionInfoNew = function(submission) {
   // Display metadata
   document.getElementById('student-name').textContent =
     submission.metadata.studentName || 'N/A'

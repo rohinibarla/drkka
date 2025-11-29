@@ -171,7 +171,7 @@
   <script src="review.js"></script>
   <script>
     // Auto-load submission from sessionStorage
-    document.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', () => {
       const loadingEl = document.getElementById('loading')
       const errorContainer = document.getElementById('error-container')
       const errorMessage = document.getElementById('error-message')
@@ -193,10 +193,10 @@
         loadingEl.classList.add('hidden')
 
         // Load the submission into review.js
-        if (typeof loadSubmissionData === 'function') {
-          loadSubmissionData(submission)
+        if (typeof window.loadSubmissionData === 'function') {
+          window.loadSubmissionData(submission)
         } else {
-          throw new Error('Review player not initialized')
+          throw new Error('Review player not initialized. Please refresh the page.')
         }
 
       } catch (error) {
