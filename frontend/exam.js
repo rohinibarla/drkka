@@ -207,11 +207,12 @@ async function handleSubmit(e) {
     // Display on page (commented out for production, uncomment for debugging)
     // displayJSON(payload)
 
-    // Update button
-    submitBtn.textContent = 'Submitted ✓'
+    // Hide exam form and show thank you message
+    const examContainer = document.getElementById('exam-container')
+    const thankYouSection = document.getElementById('thank-you-section')
 
-    // Show success message
-    alert('Submission successful! Your answer has been recorded.')
+    examContainer.classList.add('hidden')
+    thankYouSection.classList.remove('hidden')
 
   } catch (error) {
     console.error('Error processing submission:', error)

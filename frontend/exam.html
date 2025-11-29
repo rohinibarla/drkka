@@ -25,7 +25,7 @@
 <body class="bg-slate-50 min-h-screen py-8">
   <div class="max-w-4xl mx-auto px-4">
     <!-- Main Form Card -->
-    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-8">
+    <div id="exam-container" class="bg-white border border-gray-200 rounded-lg shadow-sm p-8">
       <h1 class="text-2xl font-bold text-gray-900 mb-6">Exam Question</h1>
 
       <form id="exam-form" class="space-y-6">
@@ -83,6 +83,12 @@
           </button>
         </div>
       </form>
+    </div>
+
+    <!-- Thank You Section (Initially Hidden) -->
+    <div id="thank-you-section" class="hidden bg-white border border-gray-200 rounded-lg shadow-sm p-12 text-center">
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">Thank You!</h2>
+      <p class="text-lg text-gray-600">Your submission has been recorded successfully.</p>
     </div>
 
     <!-- JSON Output Section (Initially Hidden) -->
