@@ -7,7 +7,7 @@
 # Production Configuration for codekaryashala.com
 export PORT=8080
 export DB_PATH=/var/lib/drkka/submissions.db
-export STATIC_DIR=../
+export STATIC_DIR=../frontend/
 export ALLOWED_ORIGINS="http://codekaryashala.com,https://codekaryashala.com"
 
 echo "✅ Environment variables configured:"

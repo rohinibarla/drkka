@@ -24,7 +24,7 @@ func main() {
 	// Get static files directory from environment or use default
 	staticDir := os.Getenv("STATIC_DIR")
 	if staticDir == "" {
-		staticDir = "../" // Parent directory contains exam.html, main.js, etc.
+		staticDir = "../frontend/" // Frontend directory contains exam.html, main.js, etc.
 	}
 
 	// Initialize SQLite storage

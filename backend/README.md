@@ -47,7 +47,7 @@ PORT=3000 DB_PATH=/path/to/database.db ./drkka-server
 |----------|---------|-------------|
 | `PORT` | `8080` | Server port |
 | `DB_PATH` | `./drkka.db` | SQLite database file path |
-| `STATIC_DIR` | `../` | Directory containing static files (HTML, JS, JSON) |
+| `STATIC_DIR` | `../frontend/` | Directory containing static files (HTML, JS, JSON) |
 | `ALLOWED_ORIGINS` | localhost origins | Comma-separated list of allowed CORS origins |
 
 ### Example Configuration
@@ -77,7 +77,7 @@ source config_server.sh
 ```bash
 export PORT=8080
 export DB_PATH=/var/lib/drkka/submissions.db
-export STATIC_DIR=../
+export STATIC_DIR=../frontend/
 export ALLOWED_ORIGINS="http://codekaryashala.com,https://codekaryashala.com"
 ./drkka-server
 ```
