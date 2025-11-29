@@ -21,6 +21,12 @@ func main() {
 		dbPath = "./drkka.db"
 	}
 
+	// Get static files directory from environment or use default
+	staticDir := os.Getenv("STATIC_DIR")
+	if staticDir == "" {
+		staticDir = "../" // Parent directory contains exam.html, main.js, etc.
+	}
+
 	// Initialize SQLite storage
 	store, err := storage.NewSQLiteStorage(dbPath)
 	if err != nil {
@@ -32,11 +38,15 @@ func main() {
 
 	// Initialize handlers
 	submitHandler := handlers.NewSubmitHandler(store)
+	staticHandler := handlers.NewStaticFileHandler(staticDir)
 
 	// Setup routes
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", handlers.HealthCheckHandler)
 	mux.HandleFunc("/submit", submitHandler.HandleSubmit)
+
+	// Serve static files (HTML, JS, JSON) - this should be last
+	mux.Handle("/", staticHandler)
 
 	// Wrap with CORS middleware
 	handler := middleware.CORS(mux)
@@ -63,6 +73,8 @@ func main() {
 		log.Printf("🚀 Server starting on http://localhost:%s", port)
 		log.Printf("📊 Health check: http://localhost:%s/health", port)
 		log.Printf("📝 Submit endpoint: http://localhost:%s/submit", port)
+		log.Printf("📄 Exam page: http://localhost:%s/exam.html", port)
+		log.Printf("📄 Review page: http://localhost:%s/review.html", port)
 		serverErrors <- server.ListenAndServe()
 	}()
 

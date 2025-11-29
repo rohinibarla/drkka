@@ -6,6 +6,7 @@ High-performance Go backend server for handling exam submissions with concurrent
 
 - ✅ **Concurrent Connection Handling** - Built on Go's native HTTP server with goroutines
 - ✅ **SQLite Database** - WAL mode enabled for better concurrent performance
+- ✅ **Static File Serving** - Serves HTML, JS, JSON files (exam.html, review.html, etc.)
 - ✅ **CORS Support** - Configurable cross-origin resource sharing
 - ✅ **Graceful Shutdown** - Clean shutdown with connection draining
 - ✅ **Input Validation** - Comprehensive payload validation
@@ -46,6 +47,7 @@ PORT=3000 DB_PATH=/path/to/database.db ./drkka-server
 |----------|---------|-------------|
 | `PORT` | `8080` | Server port |
 | `DB_PATH` | `./drkka.db` | SQLite database file path |
+| `STATIC_DIR` | `../` | Directory containing static files (HTML, JS, JSON) |
 | `ALLOWED_ORIGINS` | localhost origins | Comma-separated list of allowed CORS origins |
 
 ### Example Configuration
@@ -75,6 +77,7 @@ source config_server.sh
 ```bash
 export PORT=8080
 export DB_PATH=/var/lib/drkka/submissions.db
+export STATIC_DIR=../
 export ALLOWED_ORIGINS="http://codekaryashala.com,https://codekaryashala.com"
 ./drkka-server
 ```
@@ -138,6 +141,32 @@ Health check endpoint.
   "timestamp": "2025-11-29T10:30:00Z"
 }
 ```
+
+### Static Files
+
+The server serves static files (HTML, JS, JSON) from the configured directory.
+
+**Default page:**
+- `GET /` → Serves `exam.html`
+
+**Static files:**
+- `GET /exam.html` → Exam form page
+- `GET /review.html` → Replay/review page
+- `GET /main.js` → Exam JavaScript
+- `GET /review.js` → Review JavaScript
+- `GET /process_and_pack.js` → Compression logic
+- `GET /questions.json` → Question bank
+- And any other `.html`, `.js`, `.json`, `.css` files
+
+**Content types automatically set:**
+- `.html` → `text/html; charset=utf-8`
+- `.js` → `application/javascript; charset=utf-8`
+- `.json` → `application/json; charset=utf-8`
+
+**Security:**
+- Directory listing disabled
+- Path traversal protection (`..` not allowed)
+- Only serves files, not directories
 
 ## Database Schema
 
