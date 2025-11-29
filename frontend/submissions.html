@@ -62,10 +62,7 @@
                 Student Name
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Exam ID
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Submission Time
+                Final Answer
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
@@ -149,10 +146,7 @@
 
       tbody.innerHTML = submissions.map((sub, index) => {
         const studentName = sub.metadata?.studentName || sub.studentName || 'N/A'
-        const examId = sub.examId || 'N/A'
-        const submissionTime = sub.submissionTime
-          ? new Date(sub.submissionTime).toLocaleString()
-          : 'N/A'
+        const finalAnswer = sub.q1?.finalAnswer || 'N/A'
 
         return `
           <tr class="hover:bg-gray-50">
@@ -162,11 +156,8 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm font-medium text-gray-900">${escapeHtml(studentName)}</div>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-              ${escapeHtml(examId)}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-              ${escapeHtml(submissionTime)}
+            <td class="px-6 py-4 text-sm text-gray-600">
+              <div class="whitespace-pre-wrap break-words max-w-2xl">${escapeHtml(finalAnswer)}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm">
               <button
