@@ -30,12 +30,14 @@ func main() {
 
 	// Initialize handlers
 	submitHandler := handlers.NewSubmitHandler(store)
+	submissionsHandler := handlers.NewSubmissionsHandler(store)
 	staticHandler := handlers.NewStaticFileHandler(cfg.Static.Dir)
 
 	// Setup routes
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", handlers.HealthCheckHandler)
 	mux.HandleFunc("/submit", submitHandler.HandleSubmit)
+	mux.HandleFunc("/submissions", submissionsHandler.HandleListSubmissions)
 
 	// Serve static files (HTML, JS, JSON) - this should be last
 	mux.Handle("/", staticHandler)
@@ -59,8 +61,10 @@ func main() {
 		log.Printf("🚀 Server starting on http://localhost:%s", cfg.Server.Port)
 		log.Printf("📊 Health check: http://localhost:%s/health", cfg.Server.Port)
 		log.Printf("📝 Submit endpoint: http://localhost:%s/submit", cfg.Server.Port)
+		log.Printf("📋 Submissions list: http://localhost:%s/submissions", cfg.Server.Port)
 		log.Printf("📄 Exam page: http://localhost:%s/exam.html", cfg.Server.Port)
 		log.Printf("📄 Review page: http://localhost:%s/review.html", cfg.Server.Port)
+		log.Printf("📄 Submissions page: http://localhost:%s/submissions.html", cfg.Server.Port)
 		serverErrors <- server.ListenAndServe()
 	}()
 

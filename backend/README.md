@@ -133,6 +133,48 @@ HTTP 400 Bad Request
 validation error: studentId - must be a non-empty string
 ```
 
+### GET /submissions
+
+Get all submissions from the database.
+
+**Query Parameters:**
+- `summary` (optional): Set to `true` to get simplified summaries instead of full submissions
+
+**Response (Full submissions - default):**
+
+```json
+[
+  {
+    "examId": "EXAM-DEMO-001",
+    "studentId": "uuid-v4-here",
+    "submissionTime": "2025-11-29T10:30:00.000Z",
+    "metadata": {
+      "studentName": "John Doe"
+    },
+    "q1": {
+      "questionIndex": 0,
+      "questionTitle": "Sample Question",
+      "question": "Write code...",
+      "finalAnswer": "print('hello')",
+      "eventLog": [...]
+    }
+  }
+]
+```
+
+**Response (Summary mode - ?summary=true):**
+
+```json
+[
+  {
+    "examId": "EXAM-DEMO-001",
+    "studentId": "uuid-v4-here",
+    "studentName": "John Doe",
+    "submissionTime": "2025-11-29T10:30:00.000Z"
+  }
+]
+```
+
 ### GET /health
 
 Health check endpoint.
@@ -157,6 +199,7 @@ The server serves static files (HTML, JS, JSON) from the configured directory.
 **Static files:**
 - `GET /exam.html` → Exam form page
 - `GET /review.html` → Replay/review page
+- `GET /submissions.html` → Submissions list page
 - `GET /exam.js` → Exam JavaScript
 - `GET /review.js` → Review JavaScript
 - `GET /process_and_pack.js` → Compression logic
