@@ -27,8 +27,13 @@ cd backend
 # Download dependencies
 go mod download
 
-# Build the server
-go build -o drkka-server
+# Build the server (from backend directory)
+cd cmd/server
+go build -o ../../drkka-server
+cd ../..
+
+# Or use go install
+go install ./cmd/server
 ```
 
 ### Run the Server
@@ -250,11 +255,15 @@ go test ./...
 ### Build for Production
 
 ```bash
-# Build optimized binary
-go build -ldflags="-s -w" -o drkka-server
+# Build optimized binary (from backend directory)
+cd cmd/server
+go build -ldflags="-s -w" -o ../../drkka-server
+cd ../..
 
-# Build for Linux (from macOS)
-GOOS=linux GOARCH=amd64 go build -o drkka-server-linux
+# Build for Linux (from backend/cmd/server directory)
+cd cmd/server
+GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ../../drkka-server-linux
+cd ../..
 ```
 
 ## Production Deployment
@@ -301,7 +310,8 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN go build -o drkka-server
+WORKDIR /app/cmd/server
+RUN go build -o /app/drkka-server
 
 FROM alpine:latest
 RUN apk add --no-cache ca-certificates
@@ -355,17 +365,24 @@ PORT=3000 ./drkka-server
 
 ```
 backend/
-├── main.go                 # Server entry point
+├── cmd/
+│   └── server/
+│       └── main.go         # Server entry point
+├── internal/               # Private app logic
+│   ├── config/
+│   │   └── config.go      # Configuration loading
+│   ├── handlers/
+│   │   ├── health.go      # Health check handler
+│   │   ├── static.go      # Static file server
+│   │   └── submit.go      # Submit endpoint handler
+│   ├── middleware/
+│   │   └── cors.go        # CORS middleware
+│   └── storage/
+│       └── sqlite.go      # SQLite storage layer
 ├── go.mod                  # Go module definition
 ├── go.sum                  # Dependency checksums
-├── README.md               # This file
-├── handlers/
-│   ├── submit.go          # Submit endpoint handler
-│   └── health.go          # Health check handler
-├── middleware/
-│   └── cors.go            # CORS middleware
-└── storage/
-    └── sqlite.go          # SQLite storage layer
+├── config_server.sh        # Production configuration script
+└── README.md               # This file
 ```
 
 ## Security Considerations

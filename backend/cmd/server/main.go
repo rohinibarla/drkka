@@ -9,36 +9,28 @@ import (
 	"syscall"
 	"time"
 
-	"backend/handlers"
-	"backend/middleware"
-	"backend/storage"
+	"backend/internal/config"
+	"backend/internal/handlers"
+	"backend/internal/middleware"
+	"backend/internal/storage"
 )
 
 func main() {
-	// Get database path from environment or use default
-	dbPath := os.Getenv("DB_PATH")
-	if dbPath == "" {
-		dbPath = "./drkka.db"
-	}
-
-	// Get static files directory from environment or use default
-	staticDir := os.Getenv("STATIC_DIR")
-	if staticDir == "" {
-		staticDir = "../frontend/" // Frontend directory contains exam.html, main.js, etc.
-	}
+	// Load configuration
+	cfg := config.Load()
 
 	// Initialize SQLite storage
-	store, err := storage.NewSQLiteStorage(dbPath)
+	store, err := storage.NewSQLiteStorage(cfg.DB.Path)
 	if err != nil {
 		log.Fatalf("❌ Failed to initialize database: %v", err)
 	}
 	defer store.Close()
 
-	log.Printf("✅ Database initialized: %s", dbPath)
+	log.Printf("✅ Database initialized: %s", cfg.DB.Path)
 
 	// Initialize handlers
 	submitHandler := handlers.NewSubmitHandler(store)
-	staticHandler := handlers.NewStaticFileHandler(staticDir)
+	staticHandler := handlers.NewStaticFileHandler(cfg.Static.Dir)
 
 	// Setup routes
 	mux := http.NewServeMux()
@@ -49,32 +41,26 @@ func main() {
 	mux.Handle("/", staticHandler)
 
 	// Wrap with CORS middleware
-	handler := middleware.CORS(mux)
+	handler := middleware.CORS(&cfg.CORS)(mux)
 
 	// Configure server
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
 	server := &http.Server{
-		Addr:         ":" + port,
-		Handler:      handler,
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
-		IdleTimeout:  60 * time.Second,
-		// Increase max header size for large submissions
-		MaxHeaderBytes: 1 << 20, // 1 MB
+		Addr:           ":" + cfg.Server.Port,
+		Handler:        handler,
+		ReadTimeout:    cfg.Server.ReadTimeout,
+		WriteTimeout:   cfg.Server.WriteTimeout,
+		IdleTimeout:    cfg.Server.IdleTimeout,
+		MaxHeaderBytes: cfg.Server.MaxHeaderBytes,
 	}
 
 	// Start server in goroutine for graceful shutdown
 	serverErrors := make(chan error, 1)
 	go func() {
-		log.Printf("🚀 Server starting on http://localhost:%s", port)
-		log.Printf("📊 Health check: http://localhost:%s/health", port)
-		log.Printf("📝 Submit endpoint: http://localhost:%s/submit", port)
-		log.Printf("📄 Exam page: http://localhost:%s/exam.html", port)
-		log.Printf("📄 Review page: http://localhost:%s/review.html", port)
+		log.Printf("🚀 Server starting on http://localhost:%s", cfg.Server.Port)
+		log.Printf("📊 Health check: http://localhost:%s/health", cfg.Server.Port)
+		log.Printf("📝 Submit endpoint: http://localhost:%s/submit", cfg.Server.Port)
+		log.Printf("📄 Exam page: http://localhost:%s/exam.html", cfg.Server.Port)
+		log.Printf("📄 Review page: http://localhost:%s/review.html", cfg.Server.Port)
 		serverErrors <- server.ListenAndServe()
 	}()
 

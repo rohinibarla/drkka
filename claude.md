@@ -37,18 +37,24 @@ frontend/
 ### Backend Server (Go + SQLite)
 ```
 backend/
-├── main.go                (95 lines)   - HTTP server with static file serving
-├── go.mod                            - Go dependencies (go-sqlite3)
-├── config_server.sh                  - Production configuration script
-├── README.md                         - Backend documentation
-├── handlers/
-│   ├── health.go         (23 lines)   - Health check endpoint
-│   ├── submit.go        (141 lines)   - Submission endpoint with validation
-│   └── static.go         (95 lines)   - Static file server (HTML, JS, JSON)
-├── middleware/
-│   └── cors.go           (56 lines)   - CORS middleware
-└── storage/
-    └── sqlite.go        (209 lines)   - SQLite storage with WAL mode
+├── cmd/
+│   └── server/
+│       └── main.go        (88 lines)   - HTTP server entry point
+├── internal/                           - Private application logic
+│   ├── config/
+│   │   └── config.go      (66 lines)   - Configuration management
+│   ├── handlers/
+│   │   ├── health.go      (25 lines)   - Health check endpoint
+│   │   ├── submit.go     (151 lines)   - Submission endpoint with validation
+│   │   └── static.go     (101 lines)   - Static file server (HTML, JS, JSON)
+│   ├── middleware/
+│   │   └── cors.go        (50 lines)   - CORS middleware
+│   └── storage/
+│       └── sqlite.go     (209 lines)   - SQLite storage with WAL mode
+├── go.mod                              - Go dependencies (go-sqlite3)
+├── go.sum                              - Dependency checksums
+├── config_server.sh                    - Production configuration script
+└── README.md                           - Backend documentation
 ```
 
 ### Documentation
@@ -455,8 +461,9 @@ DEFAULT_EXAM_ID = "EXAM-DEMO-001"  // Change for different exams
 
 1. **Build the server:**
    ```bash
-   cd backend
-   go build -o drkka-server
+   cd backend/cmd/server
+   go build -o ../../drkka-server
+   cd ../..
    ```
 
 2. **Configure environment:**
@@ -657,6 +664,16 @@ A: Check speed > 0 (division by zero protection added)
 
 ## Recent Changes
 
+### 2025-11-29: Backend Refactoring - Standard Go Project Structure
+- **Refactored** backend to follow standard Go project layout
+- **Created** `cmd/server/` directory for main application entry point
+- **Created** `internal/` directory for private application packages
+- **Organized** packages: `config/`, `handlers/`, `middleware/`, `storage/`
+- **Added** `internal/config/` package for centralized configuration management
+- **Updated** all import paths from `backend/*` to `backend/internal/*`
+- **Updated** build commands in documentation (README.md, claude.md)
+- **Improved** code organization and maintainability
+
 ### 2025-11-29: Backend Server Implementation (Phase 2)
 - **Renamed** `index.html` → `exam.html`
 - **Created** Go backend server with SQLite storage
@@ -719,10 +736,12 @@ A: Check speed > 0 (division by zero protection added)
    - `process_and_pack.js` - Compression algorithm
    - `review.js` - Replay engine
 3. **Backend files:**
-   - `backend/main.go` - Server entry point
-   - `backend/storage/sqlite.go` - Database layer
-   - `backend/handlers/submit.go` - Submission endpoint
-   - `backend/handlers/static.go` - Static file server
+   - `backend/cmd/server/main.go` - Server entry point
+   - `backend/internal/config/config.go` - Configuration management
+   - `backend/internal/storage/sqlite.go` - Database layer
+   - `backend/internal/handlers/submit.go` - Submission endpoint
+   - `backend/internal/handlers/static.go` - Static file server
+   - `backend/internal/middleware/cors.go` - CORS middleware
    - `backend/config_server.sh` - Production configuration
 4. **Review documents:**
    - `FINAL_REVIEW.md` - Frontend comprehensive review
@@ -735,7 +754,7 @@ A: Check speed > 0 (division by zero protection added)
 
 ## Contact & Support
 
-**Repository:** /Users/rohinibarla/src/github.com/exam42/dṛkka
+**Repository:** github.com/exam42/dṛkka
 **Last Review:** 2025-11-29
 **Status:** Production Ready with Backend (Grade A+)
 **Deployment:** http://codekaryashala.com:PORT
@@ -747,8 +766,8 @@ A: Check speed > 0 (division by zero protection added)
 ## Deployment Checklist
 
 **Backend Deployment:**
-1. Build server: `cd backend && go build -o drkka-server`
-2. Configure environment: `./config_server.sh` or set variables manually
+1. Build server: `cd backend/cmd/server && go build -o ../../drkka-server && cd ../..`
+2. Configure environment: `cd backend && ./config_server.sh` or set variables manually
 3. Ensure static files are in frontend/ directory (exam.html, exam.js, etc.)
 4. Start server: `./drkka-server`
 5. Verify health: `curl http://localhost:8080/health`
