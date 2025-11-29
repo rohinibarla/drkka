@@ -432,7 +432,7 @@ function stopReplay() {
 }
 
 function changeSpeed() {
-  const speedSelect = document.getElementById('speed-select')
+  const speedSelect = document.getElementById('speed-select') || document.getElementById('speed-selector')
   const newSpeed = parseFloat(speedSelect.value)
 
   // Validate speed (must be positive)
@@ -475,25 +475,130 @@ function updatePlayPauseButton() {
 }
 
 // ============================================
+// PROGRAMMATIC LOADING (for new review.html)
+// ============================================
+
+/**
+ * Load submission data programmatically
+ * Called from review.html when submission is passed via sessionStorage
+ */
+function loadSubmissionData(submission) {
+  try {
+    // Validate required fields
+    if (!submission.q1) {
+      throw new Error('Invalid submission format: missing q1')
+    }
+
+    if (!submission.q1.eventLog || !Array.isArray(submission.q1.eventLog)) {
+      throw new Error('Invalid submission format: missing or invalid eventLog')
+    }
+
+    if (!submission.metadata) {
+      throw new Error('Invalid submission format: missing metadata')
+    }
+
+    reviewState.submission = submission
+    reviewState.events = submission.q1.eventLog
+
+    // Display submission info (new review.html structure)
+    displaySubmissionInfoNew(submission)
+
+    // Show panels
+    document.getElementById('info-panel').classList.remove('hidden')
+    document.getElementById('question-panel').classList.remove('hidden')
+    document.getElementById('replay-panel').classList.remove('hidden')
+    document.getElementById('final-answer-panel').classList.remove('hidden')
+
+    // Clear any previous replay
+    resetReplay()
+
+  } catch (error) {
+    throw error  // Let the caller handle the error
+  }
+}
+
+/**
+ * Display submission info for new review.html structure
+ */
+function displaySubmissionInfoNew(submission) {
+  // Display metadata
+  document.getElementById('student-name').textContent =
+    submission.metadata.studentName || 'N/A'
+
+  document.getElementById('exam-id').textContent =
+    submission.examId || 'N/A'
+
+  // Question
+  document.getElementById('question-title').textContent =
+    submission.q1.questionTitle || 'Question'
+
+  document.getElementById('question-text').textContent =
+    submission.q1.question || 'N/A'
+
+  // Final answer
+  document.getElementById('final-answer-text').textContent =
+    submission.q1.finalAnswer || ''
+
+  // Calculate duration
+  if (submission.q1.startTime_ms && submission.q1.endTime_ms) {
+    const duration = submission.q1.endTime_ms - submission.q1.startTime_ms
+    const seconds = Math.round(duration / 1000)
+    document.getElementById('duration').textContent = `${seconds} seconds`
+  } else {
+    document.getElementById('duration').textContent = 'N/A'
+  }
+
+  // Event count
+  document.getElementById('event-count').textContent =
+    submission.q1.eventLog ? submission.q1.eventLog.length : 0
+}
+
+// ============================================
 // EVENT LISTENERS
 // ============================================
 
 window.addEventListener('DOMContentLoaded', () => {
-  // Load button
-  document.getElementById('load-btn')
-    .addEventListener('click', loadSubmission)
+  // Load button (review_dev.html only)
+  const loadBtn = document.getElementById('load-btn')
+  if (loadBtn) {
+    loadBtn.addEventListener('click', loadSubmission)
+  }
 
-  // Play/Pause button
-  document.getElementById('play-pause-btn')
-    .addEventListener('click', togglePlayPause)
+  // Play/Pause button (review_dev.html)
+  const playPauseBtn = document.getElementById('play-pause-btn')
+  if (playPauseBtn) {
+    playPauseBtn.addEventListener('click', togglePlayPause)
+  }
+
+  // Separate Play and Pause buttons (review.html)
+  const playBtn = document.getElementById('play-btn')
+  const pauseBtn = document.getElementById('pause-btn')
+  if (playBtn) {
+    playBtn.addEventListener('click', () => {
+      startReplay()
+      playBtn.classList.add('hidden')
+      if (pauseBtn) pauseBtn.classList.remove('hidden')
+    })
+  }
+  if (pauseBtn) {
+    pauseBtn.addEventListener('click', () => {
+      pauseReplay()
+      pauseBtn.classList.add('hidden')
+      if (playBtn) playBtn.classList.remove('hidden')
+    })
+  }
 
   // Reset button
-  document.getElementById('reset-btn')
-    .addEventListener('click', resetReplay)
+  const resetBtn = document.getElementById('reset-btn')
+  if (resetBtn) {
+    resetBtn.addEventListener('click', resetReplay)
+  }
 
-  // Speed selector
-  document.getElementById('speed-select')
-    .addEventListener('change', changeSpeed)
+  // Speed selector (both versions)
+  const speedSelect = document.getElementById('speed-select') || document.getElementById('speed-selector')
+  if (speedSelect) {
+    speedSelect.addEventListener('change', changeSpeed)
+  }
 
   // Prevent user input in replay field
   const replayField = document.getElementById('replay-field')

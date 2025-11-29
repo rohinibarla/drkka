@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>dṛkka - Review & Replay</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* Monospace font for code/question/answer areas */
+    .code-font {
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      letter-spacing: 0.5px;
+    }
+
+    /* Cursor indicator animation */
+    .cursor-indicator {
+      display: inline-block;
+      width: 2px;
+      height: 1.2em;
+      background-color: #3b82f6;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen py-8">
+  <div class="max-w-4xl mx-auto px-4">
+
+    <!-- Page Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">Submission Review & Replay</h1>
+      <p class="text-gray-600 mt-2">Replay the typing process</p>
+      <a href="submissions.html" class="text-blue-600 hover:text-blue-800 text-sm mt-2 inline-block">
+        ← Back to Submissions List
+      </a>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading" class="text-center py-12">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <p class="mt-4 text-gray-600">Loading submission...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="error-container" class="hidden bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
+      <div class="flex items-start">
+        <div class="flex-shrink-0">
+          <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Error loading submission</h3>
+          <p id="error-message" class="mt-2 text-sm text-red-700"></p>
+          <a href="submissions.html" class="mt-3 inline-block text-sm text-red-800 font-medium hover:text-red-900">
+            ← Return to Submissions List
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submission Info Panel -->
+    <div id="info-panel" class="hidden bg-white border border-gray-200 rounded-lg shadow-sm p-8 mb-8">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Submission Details</h2>
+
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <span class="text-sm font-medium text-gray-700">Student:</span>
+          <span id="student-name" class="ml-2 text-gray-900"></span>
+        </div>
+        <div>
+          <span class="text-sm font-medium text-gray-700">Exam ID:</span>
+          <span id="exam-id" class="ml-2 text-gray-900"></span>
+        </div>
+        <div>
+          <span class="text-sm font-medium text-gray-700">Duration:</span>
+          <span id="duration" class="ml-2 text-gray-900"></span>
+        </div>
+        <div>
+          <span class="text-sm font-medium text-gray-700">Events:</span>
+          <span id="event-count" class="ml-2 text-gray-900"></span>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <span class="text-sm font-medium text-gray-700">Question:</span>
+        <div id="question-title" class="mt-1 text-gray-900 font-medium"></div>
+      </div>
+    </div>
+
+    <!-- Question Display -->
+    <div id="question-panel" class="hidden bg-white border border-gray-200 rounded-lg shadow-sm p-8 mb-8">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Question</h2>
+      <div id="question-text" class="code-font text-gray-800 whitespace-pre-wrap bg-gray-50 p-4 rounded-md border border-gray-200"></div>
+    </div>
+
+    <!-- Replay Panel -->
+    <div id="replay-panel" class="hidden bg-white border border-gray-200 rounded-lg shadow-sm p-8 mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold text-gray-900">Replay</h2>
+        <div class="flex items-center space-x-2">
+          <label class="text-sm text-gray-700">Speed:</label>
+          <select id="speed-selector" class="px-3 py-1 border border-gray-300 rounded-md text-sm">
+            <option value="0.5">0.5x</option>
+            <option value="1" selected>1x</option>
+            <option value="2">2x</option>
+            <option value="4">4x</option>
+            <option value="8">8x</option>
+            <option value="16">16x</option>
+          </select>
+        </div>
+      </div>
+
+      <textarea
+        id="replay-field"
+        rows="15"
+        class="code-font w-full px-4 py-3 border border-gray-300 rounded-md bg-white resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+        readonly
+      ></textarea>
+
+      <!-- Control Buttons -->
+      <div class="flex items-center justify-between mt-4">
+        <div class="space-x-2">
+          <button
+            id="play-btn"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-md transition duration-200"
+          >
+            ▶ Play
+          </button>
+          <button
+            id="pause-btn"
+            class="hidden bg-yellow-600 hover:bg-yellow-700 text-white font-medium px-6 py-2 rounded-md transition duration-200"
+          >
+            ⏸ Pause
+          </button>
+          <button
+            id="reset-btn"
+            class="bg-gray-600 hover:bg-gray-700 text-white font-medium px-6 py-2 rounded-md transition duration-200"
+          >
+            ↺ Reset
+          </button>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="text-sm text-gray-600">
+          <span id="progress-text">0%</span>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="mt-4 bg-gray-200 rounded-full h-2 overflow-hidden">
+        <div id="progress-bar" class="bg-blue-600 h-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <!-- Final Answer -->
+    <div id="final-answer-panel" class="hidden bg-white border border-gray-200 rounded-lg shadow-sm p-8">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Final Answer</h2>
+      <div id="final-answer-text" class="code-font text-gray-800 whitespace-pre-wrap bg-gray-50 p-4 rounded-md border border-gray-200"></div>
+    </div>
+
+  </div>
+
+  <script src="review.js"></script>
+  <script>
+    // Auto-load submission from sessionStorage
+    document.addEventListener('DOMContentLoaded', () => {
+      const loadingEl = document.getElementById('loading')
+      const errorContainer = document.getElementById('error-container')
+      const errorMessage = document.getElementById('error-message')
+
+      try {
+        // Check sessionStorage for submission
+        const submissionJSON = sessionStorage.getItem('currentSubmission')
+
+        if (!submissionJSON) {
+          throw new Error('No submission found. Please select a submission from the list.')
+        }
+
+        const submission = JSON.parse(submissionJSON)
+
+        // Clear sessionStorage
+        sessionStorage.removeItem('currentSubmission')
+
+        // Hide loading
+        loadingEl.classList.add('hidden')
+
+        // Load the submission into review.js
+        if (typeof loadSubmissionData === 'function') {
+          loadSubmissionData(submission)
+        } else {
+          throw new Error('Review player not initialized')
+        }
+
+      } catch (error) {
+        console.error('Error loading submission:', error)
+        loadingEl.classList.add('hidden')
+        errorContainer.classList.remove('hidden')
+        errorMessage.textContent = error.message
+      }
+    })
+  </script>
+</body>
+</html>
