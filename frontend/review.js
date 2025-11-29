@@ -198,8 +198,31 @@ async function applyCompressedEvent(event) {
       await waitForResume()
     }
 
-    // Type the character
-    insertCharacter(chars[i])
+    const char = chars[i]
+
+    // Handle escape sequences (backspace, enter, delete)
+    switch (char) {
+      case '\b':
+        // Backspace
+        applySpecialKey('Backspace')
+        break
+
+      case '\n':
+        // Enter
+        applySpecialKey('Enter')
+        break
+
+      case '\x7F':
+        // Delete
+        applySpecialKey('Delete')
+        break
+
+      default:
+        // Regular character
+        insertCharacter(char)
+        break
+    }
+
     updateReplayField()
 
     // Wait before next character (except after last char)

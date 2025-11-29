@@ -108,3 +108,127 @@ The system captures a complete, time-stamped record of all user input—keystrok
 
 35.  **Keystrokes immediately after a paste** are logged seperately (just take care, the replay works).
 36. **Non-tracked fields are never keystroke-logged**—only final values stored.
+
+---
+
+## **H. Compression Algorithm Discussion & Evolution**
+
+### **Current Implementation: Standard Deviation Method**
+
+The initial compression algorithm uses **standard deviation** to detect consistent typing segments:
+
+- Calculate standard deviation of inter-key intervals
+- Compress when: `stddev ≤ 30ms AND length ≥ 3`
+- Works well but computationally intensive
+
+**Configuration:**
+- `THRESHOLD_STDDEV = 30` (maximum standard deviation in ms)
+- `MIN_SEGMENT_LENGTH = 3` (minimum characters to compress)
+
+---
+
+### **Proposed Enhancement: Threshold-Based Compression**
+
+**Goal:** Simplify algorithm for better maintainability while achieving same compression benefits with clearer visibility of thinking/copying pauses.
+
+#### **New Algorithm**
+
+**Principle:** Compress consecutive keys where inter-key interval is below a maximum threshold (normal typing speed).
+
+**Steps:**
+1. Start from first key event
+2. Look ahead at next key
+3. If `interval < THRESHOLD_MAX_INTERVAL_MS` → add to current segment
+4. If `interval >= THRESHOLD_MAX_INTERVAL_MS` → break segment, start new one
+5. When segment completes (minimum 3 characters):
+   - Calculate **average interval** of all keys in segment
+   - Store as `COMPRESSED` event with `interval_ms = average`
+6. First segment has `latency_ms = 0`
+7. Subsequent segments have `latency_ms = pause since last event`
+
+**Configuration:**
+- `THRESHOLD_MAX_INTERVAL_MS` - configurable threshold for experimentation
+- `MIN_SEGMENT_LENGTH = 3` - same as current
+
+**Implementation Note:** Keep old standard deviation method in code (commented out) for reference.
+
+---
+
+#### **Special Keys Handling in Compression**
+
+**Can be included in COMPRESSED segments:**
+- **Backspace** → represented as `\b` in string
+- **Enter** → represented as `\n` in string
+- **Delete** → represented as `\x7F` in string
+  - Note: Backspace removes character **before** cursor
+  - Delete removes character **after** cursor
+
+**Always kept as RAW_SPECIAL (never compressed):**
+- **Arrow keys** (ArrowLeft, ArrowRight, ArrowUp, ArrowDown)
+- **Selection events** (mouse clicks to select text)
+
+---
+
+#### **Benefits of Threshold-Based Approach**
+
+1. **Simpler computation** - no standard deviation calculation needed
+2. **Better maintainability** - easier to understand and debug
+3. **Clear pause visibility** - thinking/copying pauses clearly visible in `latency_ms` of next segment
+4. **Good compression** - consecutive fast typing still compressed effectively
+5. **Configurable** - can experiment with different thresholds to optimize
+
+---
+
+#### **Example Comparison**
+
+**Student typing behavior:**
+- Types "print" fast (~120ms between keys)
+- Pauses 5000ms (thinking or copying)
+- Types "hello" fast (~115ms between keys)
+
+**Compressed Output:**
+```json
+[
+  {
+    "type": "COMPRESSED",
+    "string": "print",
+    "latency_ms": 0,
+    "interval_ms": 120    // average interval
+  },
+  {
+    "type": "COMPRESSED",
+    "string": "hello",
+    "latency_ms": 5000,   // ← Thinking pause clearly visible!
+    "interval_ms": 115
+  }
+]
+```
+
+**With Backspace/Enter:**
+```json
+{
+  "type": "COMPRESSED",
+  "string": "hello\b\blo\nworld",  // hello, backspace twice, lo, enter, world
+  "latency_ms": 0,
+  "interval_ms": 125
+}
+```
+
+---
+
+#### **JSON Schema**
+
+No changes to schema - maintains backward compatibility:
+
+```json
+{
+  "type": "COMPRESSED",
+  "string": "text with \b and \n and \x7F",
+  "latency_ms": 0,
+  "interval_ms": 120.5
+}
+```
+
+---
+
+**Status:** Proposed enhancement - implementation pending after threshold experimentation.
