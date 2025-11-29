@@ -2,7 +2,7 @@
 
 **Last Updated:** 2025-11-29
 **Status:** ✅ Production Ready with Backend (Grade: A+)
-**Version:** Phase 2 Complete - Go Backend with SQLite
+**Version:** Phase 3 Complete - Go Backend with Submissions Listing
 
 ---
 
@@ -12,7 +12,7 @@
 
 ### Purpose
 
-Enable exam proctors to:
+Enable evaluators/teachers to:
 - Monitor typing patterns to detect potential cheating
 - Review the complete typing process, not just final answers
 - Analyze timing patterns and behavior anomalies
@@ -31,6 +31,7 @@ frontend/
 ├── questions.json          (User data)  - Question bank (6 questions)
 ├── review.html             (161 lines)  - Replay UI interface
 ├── review.js               (490 lines)  - Async replay engine
+├── submissions.html        (202 lines)  - Submissions listing page
 └── sample_submission.json  (Test data)  - Sample for testing replay
 ```
 
@@ -44,9 +45,10 @@ backend/
 │   ├── config/
 │   │   └── config.go      (66 lines)   - Configuration management
 │   ├── handlers/
-│   │   ├── health.go      (25 lines)   - Health check endpoint
-│   │   ├── submit.go     (151 lines)   - Submission endpoint with validation
-│   │   └── static.go     (101 lines)   - Static file server (HTML, JS, JSON)
+│   │   ├── health.go        (25 lines)   - Health check endpoint
+│   │   ├── submit.go       (151 lines)   - Submission endpoint with validation
+│   │   ├── submissions.go   (85 lines)   - Submissions listing endpoint
+│   │   └── static.go       (101 lines)   - Static file server (HTML, JS, JSON)
 │   ├── middleware/
 │   │   └── cors.go        (50 lines)   - CORS middleware
 │   └── storage/
@@ -160,6 +162,7 @@ HTTP Server (Go native)
 
 Routes:
 ├── POST /submit        → Submit handler (validation + SQLite storage)
+├── GET  /submissions   → List all submissions (full JSON or summary mode)
 ├── GET  /health        → Health check
 ├── GET  /              → Serves exam.html (default page)
 └── GET  /*             → Static file server (HTML, JS, JSON)
@@ -218,8 +221,10 @@ CREATE INDEX idx_submission_time ON submissions(submission_time);
 2. Browser loads `exam.js`, `process_and_pack.js`, `questions.json` from backend
 3. Student completes exam → `POST /submit` with JSON payload
 4. Backend validates payload → Saves to SQLite → Returns success
-5. Proctor opens `http://codekaryashala.com:PORT/review.html`
-6. Browser loads `review.js` → Uses saved JSON to replay typing
+5. Evaluator/Teacher opens `http://codekaryashala.com:PORT/submissions.html`
+6. Browser fetches `GET /submissions` → Displays all student submissions in table
+7. Evaluator/Teacher clicks "View Details" → Submission stored in sessionStorage → Redirects to `review.html`
+8. Browser loads `review.js` → Reads from sessionStorage → Replays typing character-by-character
 
 ---
 
@@ -415,7 +420,6 @@ DEFAULT_EXAM_ID = "EXAM-DEMO-001"  // Change for different exams
 1. **No authentication** - Assumes trusted network or add reverse proxy auth
 2. **No rate limiting** - Can be added if needed
 3. **Single server only** - For load balancing, use multiple instances with shared DB
-4. **No submission retrieval API** - Currently stores only, retrieval via DB queries
 
 ---
 
@@ -481,6 +485,7 @@ DEFAULT_EXAM_ID = "EXAM-DEMO-001"  // Change for different exams
 
 4. **Access the application:**
    - Exam: `http://codekaryashala.com:8080/exam.html`
+   - Submissions: `http://codekaryashala.com:8080/submissions.html`
    - Review: `http://codekaryashala.com:8080/review.html`
    - Health: `http://codekaryashala.com:8080/health`
 
@@ -522,11 +527,10 @@ See `backend/README.md` for systemd configuration.
 ## Optional Enhancements (Future Phases)
 
 ### Priority 1 (Next Sprint)
-1. Add GET /submissions API endpoint (retrieve stored submissions)
-2. Add unit tests for Go backend handlers
-3. Add unit tests for frontend (Jest)
-4. Add JSDoc comments
-5. Implement ArrowUp/Down in replay
+1. Add unit tests for Go backend handlers
+2. Add unit tests for frontend (Jest)
+3. Add JSDoc comments
+4. Implement ArrowUp/Down in replay
 
 ### Priority 2 (Future)
 6. Add authentication/authorization
@@ -664,6 +668,16 @@ A: Check speed > 0 (division by zero protection added)
 
 ## Recent Changes
 
+### 2025-11-29: Submissions Listing Feature (Phase 3 Complete)
+- **Created** `submissions.html` (202 lines) - Full submissions listing UI
+- **Created** `backend/internal/handlers/submissions.go` (85 lines) - Submissions handler
+- **Implemented** GET /submissions endpoint with full JSON and summary modes
+- **Added** Storage methods: `GetAllSubmissions()`, `GetSubmission()`, `GetSubmissionsByExam()`
+- **Integrated** sessionStorage flow: submissions.html → review.html
+- **Added** Query parameter support: `?summary=true` for lightweight listing
+- **Updated** main.go to register /submissions route
+- **Documented** Complete end-to-end workflow in CLAUDE.md
+
 ### 2025-11-29: Backend Refactoring - Standard Go Project Structure
 - **Refactored** backend to follow standard Go project layout
 - **Created** `cmd/server/` directory for main application entry point
@@ -756,7 +770,7 @@ A: Check speed > 0 (division by zero protection added)
 
 **Repository:** github.com/exam42/dṛkka
 **Last Review:** 2025-11-29
-**Status:** Production Ready with Backend (Grade A+)
+**Status:** Production Ready with Backend & Submissions (Grade A+)
 **Deployment:** http://codekaryashala.com:PORT
 
 ---
@@ -768,10 +782,12 @@ A: Check speed > 0 (division by zero protection added)
 **Backend Deployment:**
 1. Build server: `cd backend/cmd/server && go build -o ../../drkka-server && cd ../..`
 2. Configure environment: `cd backend && ./config_server.sh` or set variables manually
-3. Ensure static files are in frontend/ directory (exam.html, exam.js, etc.)
+3. Ensure static files are in frontend/ directory (exam.html, exam.js, submissions.html, etc.)
 4. Start server: `./drkka-server`
 5. Verify health: `curl http://localhost:8080/health`
 6. Test exam page: `http://localhost:8080/exam.html`
+7. Test submissions page: `http://localhost:8080/submissions.html`
+8. Test submissions API: `curl http://localhost:8080/submissions`
 
 **Production Configuration:**
 - Set `ALLOWED_ORIGINS` to your domain (codekaryashala.com)
