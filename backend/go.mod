@@ -1,4 +1,4 @@
-module github.com/exam42/drkka/backend
+module backend
 
 go 1.21
 

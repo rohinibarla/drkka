@@ -9,9 +9,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/exam42/drkka/backend/handlers"
-	"github.com/exam42/drkka/backend/middleware"
-	"github.com/exam42/drkka/backend/storage"
+	"backend/handlers"
+	"backend/middleware"
+	"backend/storage"
 )
 
 func main() {

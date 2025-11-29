@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/exam42/drkka/backend/storage"
+	"backend/storage"
 )
 
 // SubmitHandler handles submission requests
