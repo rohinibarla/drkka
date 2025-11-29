@@ -152,7 +152,7 @@ The server serves static files (HTML, JS, JSON) from the configured directory.
 **Static files:**
 - `GET /exam.html` → Exam form page
 - `GET /review.html` → Replay/review page
-- `GET /main.js` → Exam JavaScript
+- `GET /exam.js` → Exam JavaScript
 - `GET /review.js` → Review JavaScript
 - `GET /process_and_pack.js` → Compression logic
 - `GET /questions.json` → Question bank

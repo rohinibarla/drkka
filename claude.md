@@ -26,7 +26,7 @@ Enable exam proctors to:
 ```
 frontend/
 ├── exam.html               (101 lines)  - Exam form UI with Tailwind CSS
-├── main.js                 (266 lines)  - Event capture and submission
+├── exam.js                 (266 lines)  - Event capture and submission
 ├── process_and_pack.js     (208 lines)  - Compression and JSON generation
 ├── questions.json          (User data)  - Question bank (6 questions)
 ├── review.html             (161 lines)  - Replay UI interface
@@ -68,7 +68,7 @@ backend/README.md             - Backend setup and API documentation
 
 ## Architecture Overview
 
-### Event Capture Flow (main.js)
+### Event Capture Flow (exam.js)
 
 1. **Page Load** → Random question selected from questions.json
 2. **First Interaction** → `startTime_ms` recorded (focus/click/keydown)
@@ -209,7 +209,7 @@ CREATE INDEX idx_submission_time ON submissions(submission_time);
 **Full System Flow:**
 
 1. Student opens `http://codekaryashala.com:PORT/` → Backend serves `exam.html`
-2. Browser loads `main.js`, `process_and_pack.js`, `questions.json` from backend
+2. Browser loads `exam.js`, `process_and_pack.js`, `questions.json` from backend
 3. Student completes exam → `POST /submit` with JSON payload
 4. Backend validates payload → Saves to SQLite → Returns success
 5. Proctor opens `http://codekaryashala.com:PORT/review.html`
@@ -331,7 +331,7 @@ DEFAULT_EXAM_ID = "EXAM-DEMO-001"  // Change for different exams
 
 | File | Score | Status |
 |------|-------|--------|
-| **main.js** | 9.5/10 | Excellent |
+| **exam.js** | 9.5/10 | Excellent |
 | **process_and_pack.js** | 9.0/10 | Excellent |
 | **review.js** | 9.5/10 | Excellent |
 
@@ -715,7 +715,7 @@ A: Check speed > 0 (division by zero protection added)
 1. **Read this file first** for complete context
 2. **Frontend files:**
    - `exam.html` - Exam form UI
-   - `main.js` - Event capture logic
+   - `exam.js` - Event capture logic
    - `process_and_pack.js` - Compression algorithm
    - `review.js` - Replay engine
 3. **Backend files:**
@@ -749,7 +749,7 @@ A: Check speed > 0 (division by zero protection added)
 **Backend Deployment:**
 1. Build server: `cd backend && go build -o drkka-server`
 2. Configure environment: `./config_server.sh` or set variables manually
-3. Ensure static files are in frontend/ directory (exam.html, main.js, etc.)
+3. Ensure static files are in frontend/ directory (exam.html, exam.js, etc.)
 4. Start server: `./drkka-server`
 5. Verify health: `curl http://localhost:8080/health`
 6. Test exam page: `http://localhost:8080/exam.html`
